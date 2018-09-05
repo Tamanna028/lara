@@ -1,0 +1,593 @@
+
+
+
+
+User Name
+Email
+Password
+Image 
+Type: radio button
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+include_once("header.php");
+if(isset($_POST['submit']))
+{ 		//print_r($_POST);
+	$id = $_GET['id'];
+	
+	$name =  $_POST['name'];
+	//$id = $_POST['id'];
+	$email =  $_POST['email'];
+	$phone_num =  $_POST['phone_num'];
+	$address = $_POST['address'];
+	//$photo = mysqli_real_escape_string($mysqli, $_POST['photo']);
+	$dept_id =  $_POST['dept_id'];
+	$desig_id =  $_POST['desig_id'];
+	
+	//print_r($imgFile);
+	
+	
+	    $imgFile = $_FILES['image']['name'];
+		$tmp_dir = $_FILES['image']['tmp_name'];
+		$imgSize = $_FILES['image']['size'];
+		$upload_dir = 'user_images/'; // upload directory
+	
+			$imgExt = strtolower(pathinfo($imgFile,PATHINFO_EXTENSION)); // get image extension
+		
+			// valid image extensions
+			//$valid_extensions = array('jpeg', 'jpg', 'png', 'gif'); // valid extensions
+			//$valid_extensions = array('pdf', 'docx', 'odt', 'txt'); // valid extensions
+		
+			// rename uploading image
+			$userpic = rand(1000,1000000).".".$imgExt;
+			move_uploaded_file($tmp_dir,$upload_dir.$userpic);
+				//print_r $userpic;
+			// allow valid image file formats
+			/*if(in_array($imgExt, $valid_extensions)){			
+				// Check file size '5MB'
+				//if($imgSize < 5000000)				{
+					move_uploaded_file($tmp_dir,$upload_dir.$userpic);
+				//}
+				/*else{
+					$errMSG = "Sorry, your file is too large.";
+				}*/
+			//}
+			/*else{
+				$errMSG = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";		
+			}*/
+		
+
+ $resu = mysqli_query($mysqli, "SELECT * FROM employee WHERE id=$id");
+
+while($res = mysqli_fetch_array($resu))
+{
+ $userpic_pre = $res['image'];
+}
+
+if(file_exists('user_images/'.$userpic_pre))
+{
+	unlink('user_images/'.$userpic_pre);
+}
+		
+$sql = "UPDATE employee SET name='$name', email='$email', phone_num='$phone_num', address='$address', image='$userpic', dept_id='$dept_id', desig_id='desig_id' WHERE id=$id";
+
+
+$result = mysqli_query($mysqli, $sql );
+
+if ($mysqli ->query($result) === TRUE) {
+    echo  "New record created successfully";
+} else {
+    echo "Error: " . $result . "<br>" . $mysqli->error;
+}
+header('Location: emp_add.php');
+
+}
+
+//getting id from url
+ $id = $_REQUEST['id'];
+//selecting data associated with this particular id
+$result = mysqli_query($mysqli, "SELECT * FROM employee WHERE id=$id");
+
+while($res = mysqli_fetch_array($result))
+{
+	 $name = $res['name'];
+	 $email = $res['email'];
+	 $phone_num = $res['phone_num'];
+	 $address = $res['address'];
+	 $dept_id = $res['dept_id'];
+	 $desig_id = $res['desig_id'];
+	 $imgFile = $res['image'];
+	 
+	//$age = $res['age'];
+	//$email = $res['email'];
+}
+
+
+?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Upload, Insert, Update, Delete an Image using PHP MySQL - Coding Cage</title>
+
+<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+
+</head>
+<body>
+
+<!---<div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+ 
+        <div class="navbar-header">
+            <a class="navbar-brand" href="http://www.codingcage.com" title='Programming Blog'>Coding Cage</a>
+            <a class="navbar-brand" href="http://www.codingcage.com/search/label/CRUD">CRUD</a>
+            <a class="navbar-brand" href="http://www.codingcage.com/search/label/PDO">PDO</a>
+            <a class="navbar-brand" href="http://www.codingcage.com/search/label/jQuery">jQuery</a>
+        </div>
+ 
+    </div>
+</div>--->
+
+<div class="container">
+
+
+	<div class="page-header">
+    	<h1 class="h2">add new user. <a class="btn btn-default" href="index.php"> <span class="glyphicon glyphicon-eye-open"></span> &nbsp; view all </a></h1>
+    	<h1 class="h2"><a class="btn btn-default" href="index.php">&nbsp; Back</a></h1>
+    	
+		
+    </div>
+    
+
+	<?php
+	if(isset($errMSG)){
+			?>
+            <div class="alert alert-danger">
+            	<span class="glyphicon glyphicon-info-sign"></span> <strong><?php echo $errMSG; ?></strong>
+            </div>
+            <?php
+	}
+	else if(isset($successMSG)){
+		?>
+        <div class="alert alert-success">
+              <strong><span class="glyphicon glyphicon-info-sign"></span> <?php echo $successMSG; ?></strong>
+        </div>
+        <?php
+	}
+	?>   
+
+<form method="post" enctype="multipart/form-data" class="form-horizontal">
+	    
+	<table class="table table-bordered table-responsive">
+	
+    <tr>
+    	<td><label class="control-label">Name </label></td>
+     <td><input class="form-control" type="text" name="name" placeholder="Enter Name" value="<?php echo $name;?>" /></td>
+    </tr>
+    <tr>
+     
+    	<td><label class="control-label">Email </label></td>
+        <td><input class="form-control" type="text" name="email" placeholder="example@email.com" value="<?php echo $email;?>" /></td>
+    </tr> 
+	<tr>
+    	<td><label class="control-label">Mobile </label></td>
+        <td><input class="form-control" type="text" name="phone_num" placeholder="01XXXXXXXXX" value="<?php echo $phone_num;?>" /></td>
+    </tr> 
+	<tr>
+    	<td><label class="control-label">Address </label></td>
+        <td><input class="form-control" type="text" name="address" placeholder="Enter Address" value="<?php echo $address;?>" /></td>
+    </tr>
+<tr>
+    	<td><label class="control-label">Department ID </label></td>
+       <td>
+	   <select name="dept_id" class="form-control selectpicker" value="">
+      <option value="" select>Select</option>
+      <!--<option value="Male" select>Male</option>
+      <option value="Female">Female</option>
+      <option value="Female">Other</option>--->
+     
+
+
+	<?php
+  	$query = mysqli_query($mysqli,"select dept_name,id from department");
+  	while($res = mysqli_fetch_array($query)){
+		$sel_dept= '';
+   if($dept_id == $res['id']){
+       $sel_dept = ' selected="selected"';
+
+   }
+	 	/*<option ".$sel_dept." value="<?php echo $res['id'];?>"><?php echo $res['dept_name'];?></option>*/
+		
+		echo "<option ".$sel_dept." value=". $res['id'].">".$res['dept_name'].'</option>';
+}
+
+ echo '</select>';
+		
+		 ?> 
+
+	 
+	  </td>
+    </tr>
+	
+	<tr>
+    	<td><label class="control-label">Designation ID </label></td>
+       <td><select name="desig_id" class="form-control selectpicker" value="<?php echo $desig_id;?>">
+      <option value="" select>Select</option>
+      <!--<option value="Male" select>Male</option>
+      <option value="Female">Female</option>
+      <option value="Female">Other</option>--->
+     
+
+	<?php
+  	$query = mysqli_query($mysqli,"select designation_name,id from designation");
+  	while($res = mysqli_fetch_array($query)){
+	$sel_desig= '';
+   if($desig_id == $res['id']){
+       $sel_desig = ' selected="selected"';
+
+   }
+
+	 	/*echo <option .$sel_desig .value="<?php echo $res['id'];?>"><?php echo $res['designation_name'];?></option>*/
+		echo "<option ".$sel_desig." value=". $res['id'].">".$res['designation_name'].'</option>';
+	} 	
+	
+
+ echo '</select>';
+ 
+	?>		
+	  </td>
+    </tr>
+    
+    <tr>
+    	<td><label class="control-label">Profile Img.</label></td>
+        <td><input class="input-group" type="file" name="image" accept="image/*" value="<?php echo $imgFile;?>"/></td>
+    </tr>
+    
+    <tr>
+        <td colspan="2"><button type="submit" name="submit" class="btn btn-default">
+        <span class="glyphicon glyphicon-save"></span> &nbsp; Update
+        </button>
+        </td>
+    </tr>
+    
+    </table>
+    
+</form>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+<!----<html>
+<head>	
+	<title>Edit Data</title>
+</head>
+
+<body>
+	<h3>Edit Department</h3>
+	<br/><br/>
+	
+	<form name="form2" method="post" action="des_edit.php">
+		<table border="0">
+		<tr> 
+				<td>Name</td>
+				<td><input type="text" name="name" value="<?php echo $name;?>"></td>
+			</tr>
+			
+			
+			<tr>
+				<td><input type="hidden" name="id" value=<?php echo $_REQUEST['id'];?>> </td>
+				<td><input type="submit" name="submit" value="Update"></td>
+			</tr>
+			<tr> 
+                <td><a href="des_add.php">Go Back</a></td>
+                
+            </tr>
+		</table>
+	</form>
+</body>
+</html>--->
+<?php
+include_once("footer.php");
+?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<?php
+include_once("header.php");
+include_once("config.php");
+?>
+<?php
+// define variables and set to empty values
+$nameErr = "";
+$name = "";
+$errorMSG = (object) array();
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {	
+	
+ if (empty($_POST["name"])) {
+    $errorMSG->pre_name = "Name is required";
+	$errorMSG->success = false;
+	$errorMSG->fieldtype = "name";
+}
+else if (!ctype_alpha(str_replace([' ','-'], '', $_POST["name"]))) {
+		
+   $errorMSG->pre_name = "Only letters and white space allowed";
+   $errorMSG->success = false;
+   $errorMSG->fieldtype = "name";
+      
+    }
+	else  {
+    $name = $_POST["name"];
+	$errorMSG->pre_name = "";
+	$errorMSG->success = true;
+	$errorMSG->fieldtype = "name";
+}
+ 
+
+
+
+
+//echo json_encode($errorMSG);
+//$mysqli->close();
+
+
+  
+if(!empty($name)){
+	
+	//$sql = mysqli_query($mysqli, "INSERT INTO employee(name,email,phone_num,address,image,dept_id,desig_id) VALUES('$name','$email','$phone_num','$address','$userpic','$dept_id','$desig_id')");
+$res = "INSERT INTO department (dept_name)VALUES ('".$name."')";
+		if($mysqli->query($res)=== TRUE){
+			echo "Data added sucessfully";
+		}
+		else{
+			echo $mysqli->error;
+		}
+		
+}
+}
+
+
+
+?>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>	
+  
+  
+    <title>Add Data</title>
+	<script>
+function ajaxnew(feild){
+	
+	var nvalue = $("#"+feild).val();
+     
+
+	 var postForm = { //Fetch form data
+            [feild]    : nvalue //Store name fields value
+        };
+	//var ht = "";
+	 $.ajax({
+            type: "POST",
+            url: "add.php",
+            dataType: "json",
+            data: postForm,
+            success : function(data){
+                if (data.fieldtype == "name"){
+                    $(".name-display-error").html("<span>"+data.pre_name+"</span>");
+					$(".name-display-error").css("display","block");
+					
+                } 
+				
+				
+            }
+        });
+
+
+}
+</script>
+</head>
+ 
+<body>
+<div class="container">
+    <h1 class="h2" style=><a class="btn btn-default" href=""> <span class="glyphicon glyphicon-plus"></span> &nbsp; Add Department </a> </h1>
+	<td> <a class="btn btn-danger" href="index.php" >Go Back</a></td>
+	<br/>
+	<br/>
+    <form action="add.php" method="post" name="form1">
+	
+
+		<center>
+        <div class="testing"></div>
+    <div class="alert alert-danger display-error" style="display: none">
+    </div>
+  
+           <!--- <tr> 
+                <td>ID</td>
+                <td><input type="text" name="name"></td>
+            </tr>-->
+		
+           <div class="form-group">
+      <div class="controls">
+        <input type="text" id="name" name="name" onkeyup="ajaxnew('name')" class="form-control" placeholder="Name">
+      <div class="alert alert-danger name-display-error" style="display: none">
+	  </div>
+    </div>
+            <!--<tr> 
+                <td>Email</td>
+                <td><input type="text" name="email"></td>
+            </tr>--->
+            <!---<tr> --->
+</br>
+
+                
+                <input type="submit" id="submit" value="submit" class="btn btn-success"><i class="fa fa-check"></i> </button>
+  </form>
+    </div>     
+        
+		</center>
+    </form>
+</body>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+
+
+      $('form').submit(function(e){
+        e.preventDefault();
+
+
+       var name = $("#name").val();
+        //var email = $("#email").val();
+      //  var msg_subject = $("#msg_subject").val();
+      //  var message = $("#message").val();
+       var postForm = { //Fetch form data
+            name:name
+        };
+		if(postForm.name ==""){
+			
+		}
+       var ht = "";
+        $.ajax({
+            type: "POST",
+            url: "add.php",
+            dataType: "json",
+            data: $('form').serialize(),
+            success : function(data){
+                if (data.success == true){
+                    $(".display-error").html("<ul><li>success</li></ul>");
+					$(".display-error").css("display","block");
+                } else {
+                    $(".name-display-error").html("<span>"+data.pre_name+"</span>");
+                    
+					$(".name-display-error").css("display","block");
+                }
+            }
+        });
+
+
+      });
+  });
+</script>
+</html>
+
+
+<?php
+// define variables and set to empty values
+//$nameErr = "";
+//$name = "";
+
+
+
+
+$sql = "SELECT * FROM department";
+$result = $mysqli->query($sql);
+echo "<table border='1'>
+<tr>
+<th>ID</th>
+<th>NAME</th>
+<th>Actions</th>
+</tr>";
+
+while($row = mysqli_fetch_array($result))
+{
+echo "<tr>";
+echo "<td>" . $row['id'] . "</td>";
+echo "<td>" . $row['dept_name'] . "</td>";
+
+echo "<td>| <a href=\"edit.php?id=$row[id]\">Edit</a> | <a href=\"delete.php?id=$row[id]\" onClick=\"return confirm('Are you sure you want to delete?')\">Delete</a></td>"; 
+echo "</tr>";
+}
+echo "</table>";
+
+?>
+
+
+
+
+
+<?php
+include_once("footer.php");
+?>
+
+
+
+
+
+
+
+
+
+
+
+
